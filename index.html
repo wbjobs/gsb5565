@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>哈希表冲突解决策略对比工具</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>哈希表对比工具 <span class="sub">链地址法 vs 开放寻址法（线性 / 二次探测）</span></h1>
+</header>
+
+<section class="controls">
+  <div class="group">
+    <label>键值 <input id="keyInput" type="number" value="42" step="1"></label>
+    <button id="btnInsert">插入</button>
+    <button id="btnQuery">查询</button>
+    <button id="btnDelete">删除</button>
+    <button id="btnRandomKey">随机键</button>
+  </div>
+  <div class="group">
+    <label>哈希函数
+      <select id="hashFn">
+        <option value="multiply" selected>乘法散列 (Knuth)</option>
+        <option value="division">除留余数法</option>
+        <option value="midsquare">平方取中法</option>
+        <option value="fnv1a">FNV-1a</option>
+      </select>
+    </label>
+    <label>初始容量
+      <select id="capacity">
+        <option value="16">16</option>
+        <option value="32">32</option>
+        <option value="64" selected>64</option>
+        <option value="128">128</option>
+        <option value="256">256</option>
+      </select>
+    </label>
+    <button id="btnReset">重置表</button>
+  </div>
+  <div class="group">
+    <label>压测规模
+      <select id="batchSize">
+        <option value="1000">1,000</option>
+        <option value="10000" selected>10,000</option>
+        <option value="100000">100,000</option>
+        <option value="500000">500,000</option>
+      </select>
+    </label>
+    <button id="btnBatchInsert">批量插入</button>
+    <button id="btnBatchMixed">混合压测</button>
+    <span id="progress" class="progress"></span>
+  </div>
+</section>
+
+<section class="status">
+  <div id="consistency" class="badge">一致性：—</div>
+  <div id="lastOp" class="lastop">尚未执行操作（空表查询可直接点“查询”验证）</div>
+</section>
+
+<section class="stats">
+  <table id="statsTable">
+    <thead>
+      <tr>
+        <th>策略</th><th>元素数</th><th>容量</th><th>装载因子</th>
+        <th>冲突次数</th><th>平均探测长度</th><th>墓碑数</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section class="panels">
+  <div class="panel">
+    <h2>链地址法 · 桶链长分布</h2>
+    <canvas id="chainCanvas" width="900" height="260"></canvas>
+    <div class="legend">
+      <span><i class="sw bar"></i>桶链长</span>
+      <span><i class="sw probe"></i>本次探测桶</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>开放寻址 · 线性探测 · 槽位分布</h2>
+    <canvas id="linearCanvas" width="900" height="260"></canvas>
+    <div class="legend">
+      <span><i class="sw empty"></i>空</span>
+      <span><i class="sw occ"></i>占用</span>
+      <span><i class="sw tomb"></i>墓碑</span>
+      <span><i class="sw probe"></i>探测路径（数字为顺序）</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>开放寻址 · 二次探测 · 槽位分布</h2>
+    <canvas id="quadCanvas" width="900" height="260"></canvas>
+    <div class="legend">
+      <span><i class="sw empty"></i>空</span>
+      <span><i class="sw occ"></i>占用</span>
+      <span><i class="sw tomb"></i>墓碑</span>
+      <span><i class="sw probe"></i>探测路径（数字为顺序）</span>
+    </div>
+  </div>
+</section>
+
+<section class="logwrap">
+  <h2>操作日志</h2>
+  <div id="log" class="log"></div>
+</section>
+
+<script src="main.js"></script>
+</body>
+</html>
