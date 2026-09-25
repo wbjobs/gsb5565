@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>哈希表冲突解决策略对比工具</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>哈希表对比工具 <span class="sub">链地址法 vs 开放寻址法（Canvas + Web Worker + TypedArray）</span></h1>
+</header>
+
+<section class="controls">
+  <fieldset>
+    <legend>配置（修改后自动重置）</legend>
+    <label>哈希函数
+      <select id="hashFn">
+        <option value="division">除留余数法</option>
+        <option value="multiply">乘法散列 (Knuth)</option>
+        <option value="midsquare">平方取中法</option>
+      </select>
+    </label>
+    <label>开放寻址探测
+      <select id="probeMode">
+        <option value="linear">线性探测</option>
+        <option value="quadratic">二次探测</option>
+      </select>
+    </label>
+    <label>初始容量
+      <select id="capacity">
+        <option value="53">53</option>
+        <option value="101">101</option>
+        <option value="211">211</option>
+      </select>
+    </label>
+    <label>扩容阈值(开放寻址)
+      <input id="maxLoadOA" type="number" min="0.3" max="0.95" step="0.05" value="0.75">
+    </label>
+    <label>扩容阈值(链地址)
+      <input id="maxLoadChain" type="number" min="0.5" max="8" step="0.5" value="2">
+    </label>
+  </fieldset>
+
+  <fieldset>
+    <legend>单键操作</legend>
+    <input id="keyInput" type="number" placeholder="整数键 0~999999" min="0" max="999999">
+    <button id="btnInsert">插入</button>
+    <button id="btnSearch">查询</button>
+    <button id="btnDelete">删除</button>
+    <span id="consistentBadge" class="badge hidden"></span>
+  </fieldset>
+
+  <fieldset>
+    <legend>批量 / 测试</legend>
+    <label>数量 <input id="batchCount" type="number" value="200" min="1" max="20000"></label>
+    <button id="btnBatch">批量随机插入</button>
+    <label>操作数 <input id="testOps" type="number" value="3000" min="100" max="100000"></label>
+    <button id="btnRandomTest">随机一致性测试</button>
+    <button id="btnReset" class="danger">重置</button>
+  </fieldset>
+</section>
+
+<section class="stats-row">
+  <div class="stat-card" id="statsChain">
+    <h2>链地址法</h2>
+    <table></table>
+  </div>
+  <div class="stat-card" id="statsOA">
+    <h2>开放寻址法 <span id="oaMode" class="sub"></span></h2>
+    <table></table>
+  </div>
+  <div class="stat-card" id="testPanel">
+    <h2>一致性测试</h2>
+    <div id="testResult">尚未运行。随机执行插入/删除/查询，逐步比对两表与参考 Set 的结果。</div>
+  </div>
+</section>
+
+<section class="panels">
+  <div class="panel">
+    <h2>链地址法 · 桶分布（每桶链长）</h2>
+    <canvas id="chainCanvas" width="900" height="260"></canvas>
+    <div id="chainDetail" class="chain-detail">链遍历过程将在此展示</div>
+  </div>
+  <div class="panel">
+    <h2>开放寻址法 · 槽位分布与探测过程</h2>
+    <canvas id="oaCanvas" width="900" height="340"></canvas>
+    <div class="legend">
+      <span><i class="sw empty"></i>空槽</span>
+      <span><i class="sw occupied"></i>占用</span>
+      <span><i class="sw tomb"></i>墓碑</span>
+      <span><i class="sw probing"></i>探测中</span>
+      <span><i class="sw hit"></i>命中/落点</span>
+      <span><i class="sw miss"></i>未命中终点</span>
+    </div>
+  </div>
+</section>
+
+<section class="log-panel">
+  <h2>操作日志</h2>
+  <div id="log"></div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
